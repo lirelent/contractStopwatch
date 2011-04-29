@@ -5,14 +5,31 @@
  */
 package org.ryanmetzger.utils.contractStopwatch;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 /**
- * Hello world!
- *
+ * entry point and main window for app
  */
-public class App 
+public class App extends JFrame
 {
-    public static void main( String[] args )
+    private static final long serialVersionUID = 1L;
+
+    public App()
     {
-        System.out.println( "Hello World!" );
+        setTitle("Contract Stopwatch");
+        setSize(500, 600);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+
+    public static void main(String[] args)
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                new App().setVisible(true);
+            }
+        });
     }
 }
