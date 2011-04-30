@@ -7,8 +7,8 @@ package org.ryanmetzger.utils.contractStopwatch.contracts;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -23,8 +23,10 @@ public class ContractsManager extends JPanel
     private static ContractsManager reference = null;
     private static final int ITEM_HEIGHT = 50;
     
-    private final List<Contract> contracts =
-                            new ArrayList<Contract>();
+    private final Set<Contract> contracts =
+                            new HashSet<Contract>();
+    private final Set<Contract> activeContracts =
+                            new HashSet<Contract>();
     private final Object guard = new Object();
     private int height;
     
@@ -44,6 +46,10 @@ public class ContractsManager extends JPanel
         return reference;
     }
     
+    /**
+     * add contract into manager
+     * @param contract
+     */
     public void addContract(Contract contract)
     {
         synchronized (guard)
@@ -59,6 +65,52 @@ public class ContractsManager extends JPanel
             // repaint
             revalidate();
             repaint();
+        }
+    }
+    
+    /**
+     * stop work on all active contracts and start work on
+     * contract
+     * @param contract
+     */
+    public void switchContract(Contract contract)
+    {
+        synchronized (guard)
+        {
+            for (Contract activeContract : activeContracts)
+            {
+                activeContract.stop();
+            }
+            activeContracts.clear();
+            activeContracts.add(contract);
+        }
+    }
+    
+    /**
+     * add contract to what is currently being worked
+     * @param contract
+     */
+    public void multitaskContract(Contract contract)
+    {
+        synchronized (guard)
+        {
+            activeContracts.add(contract);
+            for (Contract activeContract : activeContracts)
+            {
+                activeContract.setConcurrency(activeContracts.size());
+            }
+        }
+    }
+    
+    public void stopContract(Contract contract)
+    {
+        synchronized (guard)
+        {
+            activeContracts.remove(contract);
+            for (Contract activeContract : activeContracts)
+            {
+                activeContract.setConcurrency(activeContracts.size());
+            }
         }
     }
 }

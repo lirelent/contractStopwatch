@@ -6,10 +6,15 @@
 package org.ryanmetzger.utils.contractStopwatch.contracts;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 /**
  * @author lirelent
@@ -60,5 +65,41 @@ public class EditContract extends JPanel
         add(desc);
         add(proj);
         add(task);
+    }
+    
+    public static void editContract(final Contract contract)
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            
+            public void run()
+            {
+                final JFrame frame = new JFrame();
+                JPanel main = new JPanel();
+                frame.add(main);
+                
+                final EditContract edit =
+                    new EditContract(contract);
+                main.add(edit);
+                
+                JButton bOk = new JButton("ok");
+                main.add(bOk);
+                bOk.addActionListener(new ActionListener() {
+                    
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        edit.getContract();
+                        frame.dispose();
+                    }
+                });
+                
+                frame.getRootPane().setDefaultButton(bOk);
+                
+                frame.setTitle("Edit Contract");
+                frame.setSize(250, 140);
+                frame.setLocationRelativeTo(null);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setVisible(true);
+            }
+        });
     }
 }

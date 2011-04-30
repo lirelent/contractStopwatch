@@ -5,6 +5,12 @@
  */
 package org.ryanmetzger.utils.contractStopwatch.contracts;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -13,7 +19,7 @@ import javax.swing.JPanel;
  * @author lirelent
  *
  */
-public class Contract extends JPanel
+public class Contract extends JPanel implements ActionListener
 {
     private static final long serialVersionUID = -1343399824907047895L;
     
@@ -29,12 +35,36 @@ public class Contract extends JPanel
      * task charge code
      */
     private String task;
+    private final Timer timer;
     private final JLabel label;
     
     public Contract()
     {
+        setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        timer = new Timer();
         label = new JLabel();
         add(label);
+        add(timer.getTime());
+        
+        JButton cSwitch = new JButton("switch");
+        cSwitch.setActionCommand("switch");
+        add(cSwitch);
+        cSwitch.addActionListener(this);
+        
+        JButton play = new JButton(">");
+        play.setActionCommand(">");
+        add(play);
+        play.addActionListener(this);
+        
+        JButton pause = new JButton("||");
+        pause.setActionCommand("||");
+        add(pause);
+        pause.addActionListener(this);
+        
+        JButton edit = new JButton("edit");
+        edit.setActionCommand("edit");
+        add(edit);
+        edit.addActionListener(this);
     }
     
     public void setFields(String desc, String project, String task)
@@ -73,5 +103,38 @@ public class Contract extends JPanel
     public String getTask()
     {
         return task;
+    }
+
+    public void stop()
+    {
+        timer.stop();
+    }
+
+    public void setConcurrency(int size)
+    {
+        timer.start(size);
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        if(e.getActionCommand() == "switch")
+        {
+            ContractsManager.getReference().switchContract(this);
+            timer.start(1);
+        }
+        else if(e.getActionCommand() == ">")
+        {
+            timer.start(1);
+            ContractsManager.getReference().multitaskContract(this);
+        }
+        else if(e.getActionCommand() == "||")
+        {
+            ContractsManager.getReference().stopContract(this);
+            timer.stop();
+        }
+        else if(e.getActionCommand() == "edit")
+        {
+            EditContract.editContract(this);
+        }
     }
 }
