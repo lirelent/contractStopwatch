@@ -19,18 +19,20 @@ public class Timer
     final private AtomicBoolean isRunning;
     final private Thread update;
     final private JLabel lTime;
+    final private Contract contract;
     
     private long cumTime = 0l;
     private int concurrent;
     
-    public Timer()
+    public Timer(Contract contract)
     {
         isRunning = new AtomicBoolean(false);
         
         update = new Thread(new Update());
         update.start();
         
-        lTime = new JLabel(" [||] 0.00");
+        lTime = new JLabel(" [||] 0.00 hrs");
+        this.contract = contract;
     }
     
     public void start(int concurrent)
@@ -53,6 +55,15 @@ public class Timer
         return lTime;
     }
     
+    public static String getFormated(long millis)
+    {
+        int hours = (int) TimeUnit.MILLISECONDS.toHours(millis);
+        double hourFraction = ((TimeUnit.MILLISECONDS.toMinutes(millis)
+                                - (hours * 60))/60.0);
+        
+        return String.format("%.2f hrs", hours + hourFraction);
+    }
+    
     private class Update implements Runnable
     {
         private long lastTime;
@@ -67,26 +78,19 @@ public class Timer
                     {
                         isRunning.wait();
                     }
-
                     lastTime = System.currentTimeMillis();
-                    int hours = 0;
-                    double hourFraction = 0.0;
                     while (isRunning.get())
                     {
                         long curTime = System.currentTimeMillis();
                         cumTime += (curTime - lastTime)/concurrent;
+                        contract.setTodayTime(cumTime);
                         lastTime = curTime;
 
-                        hours = (int) TimeUnit.MILLISECONDS.toHours(cumTime);
-                        hourFraction = ((TimeUnit.MILLISECONDS.toMinutes(cumTime)
-                                                - (hours * 60))/60.0);
-                        lTime.setText(" [>] " + String.format("%.2f", 
-                                hours + hourFraction));
+                        lTime.setText(" [>] " + getFormated(cumTime));
 
                         Thread.sleep(1000);
                     }
-                    lTime.setText(" [||] " + String.format("%.2f", 
-                            hours + hourFraction));
+                    lTime.setText(" [||] " + getFormated(cumTime));
                 } catch (InterruptedException e)
                 {
                     return;

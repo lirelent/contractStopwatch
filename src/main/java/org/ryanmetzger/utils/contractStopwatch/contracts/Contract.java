@@ -37,11 +37,12 @@ public class Contract extends JPanel implements ActionListener
     private String task;
     private final Timer timer;
     private final JLabel label;
+    private double todayTime;
     
     public Contract()
     {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        timer = new Timer();
+        timer = new Timer(this);
         label = new JLabel();
         add(label);
         add(timer.getTime());
@@ -136,5 +137,21 @@ public class Contract extends JPanel implements ActionListener
         {
             EditContract.editContract(this);
         }
+    }
+
+    /**
+     * @return the todayTime
+     */
+    public double getTodayTime()
+    {
+        return todayTime;
+    }
+
+    /**
+     * @param todayTime the todayTime to set
+     */
+    public void setTodayTime(double todayTime)
+    {
+        this.todayTime = todayTime;
     }
 }

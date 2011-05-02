@@ -113,4 +113,45 @@ public class ContractsManager extends JPanel
             }
         }
     }
+    
+    public void pauseAll()
+    {
+        synchronized (guard)
+        {
+            for (Contract activeContract : activeContracts)
+            {
+                activeContract.stop();
+            }
+            activeContracts.clear();
+        }
+    }
+    
+    public void clear()
+    {
+        synchronized (guard)
+        {
+            for (Contract activeContract : activeContracts)
+            {
+                activeContract.stop();
+            }
+            activeContracts.clear();
+            contracts.clear();
+            removeAll();
+            revalidate();
+            repaint();
+        }
+    }
+    
+    public long getCurrentCumTime()
+    {
+        long output = 0l;
+        synchronized (guard)
+        {
+            for (Contract activeContract : activeContracts)
+            {
+                output += activeContract.getTodayTime();
+            }
+        }
+        return output;
+    }
 }
