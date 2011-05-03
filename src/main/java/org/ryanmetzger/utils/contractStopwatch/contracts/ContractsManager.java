@@ -147,9 +147,9 @@ public class ContractsManager extends JPanel
         long output = 0l;
         synchronized (guard)
         {
-            for (Contract activeContract : activeContracts)
+            for (Contract contract : contracts)
             {
-                output += activeContract.getTodayTime();
+                output += contract.getTodayTime();
             }
         }
         return output;
